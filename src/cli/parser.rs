@@ -1,7 +1,16 @@
 use std::env::Args;
+use std::collections::HashMap;
+use std::sync::LazyLock;
 
-use super::commands::Command;
-// pub type CommandFn = dyn Fn(&[String]);
+use super::commands::{Command, self};
+
+type CommandFn = fn(&[String]);
+
+static COMMAND_MAP: LazyLock<HashMap<Command, CommandFn>> = LazyLock::new(|| {
+    HashMap::from([
+        (Command::Help, commands::help as CommandFn)
+    ])
+});
 
 pub fn parse(mut arguments: Args) {
     arguments.next();
@@ -14,5 +23,9 @@ pub fn parse(mut arguments: Args) {
         &[]
     };
 
-    println!("{command:?}\n{subcommands:?}");
+    if let Some(command_fn) = COMMAND_MAP.get(&command) {
+        command_fn(subcommands)
+    } else {
+        println!("Command is reserved, but not implemented yet.")
+    }
 }
