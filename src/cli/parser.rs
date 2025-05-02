@@ -1,16 +1,13 @@
-use std::env::Args;
 use std::collections::HashMap;
+use std::env::Args;
 use std::sync::LazyLock;
 
-use super::commands::{Command, self};
+use super::commands::{self, Command};
 
 type CommandFn = fn(&[String]);
 
-static COMMAND_MAP: LazyLock<HashMap<Command, CommandFn>> = LazyLock::new(|| {
-    HashMap::from([
-        (Command::Help, commands::help as CommandFn)
-    ])
-});
+static COMMAND_MAP: LazyLock<HashMap<Command, CommandFn>> =
+    LazyLock::new(|| HashMap::from([(Command::Help, commands::help as CommandFn)]));
 
 pub fn parse(mut arguments: Args) {
     arguments.next();
